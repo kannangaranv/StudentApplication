@@ -7,12 +7,12 @@ using StudentSubjectApplication.Domain.Entities;
 
 namespace StudentSubjectApplication.Domain.Repositories
 {
-    public interface IStudentRepositiry
+    public interface IStudentRepository
     {
-        void AddStudent(Student student);
-        Student GetStudentById(int id);
-        List<Student> GetAllStudents();
-        void UpdateStudent(Student student);
-        void DeleteStudent(int id);
+        public void AddStudent(string name, int age, DateOnly dateOfBirth, string Address);
+        //Student GetStudentById(string id);
+        public List<Student> GetAllStudents();
+        //void UpdateStudent(string id, string name, int age, DateOnly dateOfBirth, string Address);
+        //void DeleteStudent(string id);
     }
 }
