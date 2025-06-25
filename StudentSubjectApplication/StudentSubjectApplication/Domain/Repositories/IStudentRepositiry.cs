@@ -10,7 +10,7 @@ namespace StudentSubjectApplication.Domain.Repositories
     public interface IStudentRepository
     {
         public void AddStudent(string name, int age, DateOnly dateOfBirth, string Address);
-        //Student GetStudentById(string id);
+        Student GetStudentById(string id);
         public List<Student> GetAllStudents();
         //void UpdateStudent(string id, string name, int age, DateOnly dateOfBirth, string Address);
         //void DeleteStudent(string id);

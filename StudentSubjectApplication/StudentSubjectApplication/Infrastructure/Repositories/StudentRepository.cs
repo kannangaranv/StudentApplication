@@ -20,6 +20,14 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
             students.Add(student);
         }
 
+        public Student GetStudentById(string id)
+        {
+            foreach (Student student in students) { 
+                if(student.id == id) 
+                    return student;
+            }
+            return null;
+        }
         public List<Student> GetAllStudents()
         {
             return students;

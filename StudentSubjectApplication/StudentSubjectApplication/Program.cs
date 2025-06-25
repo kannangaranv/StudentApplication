@@ -6,6 +6,7 @@ using StudentSubjectApplication.Presentation;
 
 var serviceProvider = new ServiceCollection()
     .AddSingleton<IStudentRepository, StudentRepository>()
+    .AddSingleton<ISubjectRepository, SubjectRepository>()
     .AddSingleton<Application>()
     .BuildServiceProvider();
 

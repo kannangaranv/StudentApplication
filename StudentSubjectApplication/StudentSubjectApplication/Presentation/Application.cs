@@ -8,17 +8,21 @@ using System.Threading.Tasks;
 using StudentSubjectApplication.Domain.Entities;
 using StudentSubjectApplication.Domain.Repositories;
 using StudentSubjectApplication.Infrastructure.Repositories;
+using System.ComponentModel.Design;
 
 namespace StudentSubjectApplication.Presentation
 {
     public class Application
     {
         private readonly IStudentRepository _studentRepository;
+        private readonly ISubjectRepository _subjectRepository;
 
-        public Application(IStudentRepository studentRepository)
+        public Application(IStudentRepository studentRepository, ISubjectRepository subjectRepository)
         {
             _studentRepository = studentRepository;
+            _subjectRepository = subjectRepository;
         }
+
 
         public void Run()
         {
@@ -31,9 +35,23 @@ namespace StudentSubjectApplication.Presentation
             string? readResult;
             string menuSelection = "";
             bool validity = false;
+            Subject subject = null;
+            Student student = null;
+            List<Student> studentListOfSubject = new List<Student>();
+
+            //Sample Data Upload
+            string[,] sampleStudents = new string[,] { { "John", "23", "2000-8-9", "America" }, { "Ken", "21", "2000-10-8", "Sri Lanka" }, { "Bob", "21", "2000-10-8", "Sri Lanka" }, { "Ron", "29", "2001-10-8", "India" }, { "Ann", "21", "2011-10-8", "Sri Lanka" } };
+            string[,] sampleSubjects = new string[,] { { "English" }, { "Sinhala" }, { "Tamil" }, { "History" }, { "IT" } };
+            for (int i = 0; i < 5; i++)
+            {
+                int sampleAge = int.Parse(sampleStudents[i, 1]);
+                DateOnly sampleDate = DateOnly.Parse(sampleStudents[i, 2]);
+                _studentRepository.AddStudent(sampleStudents[i, 0], sampleAge, sampleDate, sampleStudents[i, 3]);
+                _subjectRepository.AddSubject(sampleSubjects[i, 0]);
+            }
 
             do
-            { 
+            {
                 Console.Clear();
                 Console.WriteLine("-------------------------------------------");
                 Console.WriteLine("Welcome to the Student Subject Application!");
@@ -82,7 +100,7 @@ namespace StudentSubjectApplication.Presentation
 
                             do
                             {
-                                Console.WriteLine("Enter student age:");
+                                Console.WriteLine("Enter student age : ");
                                 readResult = Console.ReadLine();
                                 if (readResult != null)
                                     validity = int.TryParse(readResult, out studentAge);
@@ -92,7 +110,7 @@ namespace StudentSubjectApplication.Presentation
 
                             do
                             {
-                                Console.WriteLine("Enter student date of birth (yyyy-mm-dd):");
+                                Console.WriteLine("Enter student date of birth (yyyy-mm-dd) : ");
                                 readResult = Console.ReadLine();
                                 if ( readResult != null)
                                 {
@@ -107,7 +125,7 @@ namespace StudentSubjectApplication.Presentation
 
                             do
                             {
-                                Console.WriteLine("Enter student address:");
+                                Console.WriteLine("Enter student address : ");
                                 readResult = Console.ReadLine();
                                 if (readResult != null)
                                     address = readResult.Trim();
@@ -133,22 +151,251 @@ namespace StudentSubjectApplication.Presentation
                         break;
 
                     case "2":
-                        // Add subject logic here
-                        break;
-                    case "3":
-                        List<Student> students = _studentRepository.GetAllStudents();
-                        Console.WriteLine("\t\t\t\t---------------------");
-                        Console.WriteLine("\t\t\t\tStudents' Information");
-                        Console.WriteLine("\t\t\t\t---------------------");
-                        foreach (var student in students)
+                        string anotherSubject = "y";
+
+                        while ( anotherSubject == "y")
                         {
-                            Console.WriteLine("ID\t\tName\t\tAge\t\tDateOfBirth\t\tAddress");
-                            Console.WriteLine($"{student.id}\t\t{student.name}\t\t{student.age}\t\t{student.dateOfBirth}\t\t{student.address}");
+                            do
+                            {
+                                Console.WriteLine("Enter Subject Name : ");
+                                readResult = Console.ReadLine();
+                                if (readResult != null)
+                                    subjectName = readResult.Trim();
+                                else
+                                    subjectName = "";
+                            } while (subjectName == "");
+
+                            _subjectRepository.AddSubject(subjectName);
+                            Console.WriteLine("Student added successfully!");
+
+                            do
+                            {
+                                Console.WriteLine("Do you want enter another subject (y/n)");
+                                readResult = Console.ReadLine();
+                                if (readResult != null)
+                                    anotherSubject = readResult.Trim().ToLower();
+                            } while (anotherSubject != "y" && anotherSubject != "n");
+                            
                         }
+
                         Console.WriteLine("Press any key to continue...");
                         Console.ReadLine();
                         break;
-                    // Other cases for subjects and operations...
+                    case "3":
+                        List<Student> students = _studentRepository.GetAllStudents();
+                        if (students.Count != 0)
+                        {
+
+                            Console.WriteLine("\t\t\t\t---------------------");
+                            Console.WriteLine("\t\t\t\tStudents' Information");
+                            Console.WriteLine("\t\t\t\t---------------------");
+                            Console.WriteLine("ID\t\tName\t\tAge\t\tDateOfBirth\t\tAddress");
+                            foreach (var std in students)
+                            {
+                                Console.WriteLine($"{std.id}\t\t{std.name}\t\t{std.age}\t\t{std.dateOfBirth}\t\t{std.address}");
+                            }
+                        }
+                        else
+                            Console.WriteLine("No Student Data");
+                            Console.WriteLine("Press any key to continue...");
+                        Console.ReadLine();
+                        break;
+
+                    case "4":
+                        List<Subject> subjects = _subjectRepository.GetAllSubjects();
+                        if (subjects.Count != 0)
+                        {
+                            Console.WriteLine("---------------------");
+                            Console.WriteLine("Subjects' information");
+                            Console.WriteLine("---------------------");
+                            Console.WriteLine("ID\tName");
+                            foreach (var sub in subjects)
+                            {
+                                Console.WriteLine($"{sub.id}\t{sub.name}");
+                            }
+                        }
+                        else
+                            Console.WriteLine("No Subject Data");
+                        
+                        Console.WriteLine("Press any key to continue...");
+                        Console.ReadLine();
+                        break;
+
+                    case "5":
+                        string subjectId = "";
+                        string studentId = "";
+                        string anotherStudentAssign = "y";
+                        string anotherAssign = "y";
+                        while (anotherAssign == "y")
+                        {
+                            Console.WriteLine("Select a subject using following details : ");
+                            subjects = _subjectRepository.GetAllSubjects();
+                            if (subjects.Count != 0)
+                            {
+                                Console.WriteLine("ID\tName");
+                                foreach (var sub in subjects)
+                                {
+                                    Console.WriteLine($"{sub.id}\t{sub.name}");
+                                }
+                                do
+                                {
+                                    Console.WriteLine("Enter the subject ID : ");
+                                    readResult = Console.ReadLine();
+                                    if (readResult != null)
+                                    {
+                                        subjectId = readResult.ToUpper().Trim();
+                                        subject = _subjectRepository.GetSubjectById(subjectId);
+                                        if (subject == null)
+                                        {
+                                            Console.WriteLine("Invalid Subject ID.");
+                                            subjectId = "";
+                                        }
+                                    
+                                    }
+
+                                    else
+                                        subjectId = "";
+                                } while (subjectId == "");
+                                Console.WriteLine($"You selected the {subject.name}");
+
+                                studentListOfSubject = subject.students;
+
+                                students = _studentRepository.GetAllStudents();
+                                if (students.Count != 0)
+                                {
+                                    if (students.Count == studentListOfSubject.Count)
+                                        Console.WriteLine($"All students have assigned to {subject.name}");
+                                    else
+                                    {
+                                        Console.WriteLine("Select students using following details : ");
+                                        Console.WriteLine("ID\t\tName\t\tAge\t\tDateOfBirth\t\tAddress");
+                                        foreach (var std in students)
+                                        {
+                                            Console.WriteLine($"{std.id}\t\t{std.name}\t\t{std.age}\t\t{std.dateOfBirth}\t\t{std.address}");
+                                        }
+
+                                        while (anotherStudentAssign == "y")
+                                        {
+                                            do
+                                            {
+                                                Console.WriteLine("Enter the Student ID : ");
+                                                readResult = Console.ReadLine();
+
+                                                if (readResult != null)
+                                                {
+                                                    studentId = readResult.ToUpper().Trim();
+                                                    student = _studentRepository.GetStudentById(studentId);
+                                                    if (student == null)
+                                                    {
+                                                        Console.WriteLine("Invalid Student ID.");
+                                                        studentId = "";
+                                                    }
+                                                    
+                                                }
+                                                else
+                                                    studentId = "";
+
+                                            } while (studentId == "");
+                                            if (studentListOfSubject.Contains(student))
+                                            {
+                                                Console.WriteLine($"{student.name} is Already assigned to {subject.name}");
+                                            }
+                                            else
+                                            {
+                                                studentListOfSubject.Add(student);
+                                                Console.WriteLine($"{student.name} successfully assigned to {subject.name}");
+                                            }
+
+                                            if (students.Count == studentListOfSubject.Count)
+                                            {
+                                                Console.WriteLine($"All students have assigned to {subject.name}");
+                                                break;
+                                            }
+
+                                            Console.WriteLine($"Do you want to assign an another student to {subject.name} (y/n)");
+
+                                            do
+                                            {
+                                                readResult = Console.ReadLine();
+                                                if (readResult != null)
+                                                    anotherStudentAssign = readResult.ToLower().Trim();
+
+                                            } while (anotherStudentAssign != "y" && anotherStudentAssign != "n");
+
+                                            
+                                        }
+                                    }
+                                }
+                                else
+                                    Console.WriteLine("No students to select");
+                            }
+                            else
+                                Console.WriteLine("No subjects to select");
+
+                        Console.WriteLine("Do you want to do another assignment (y/n)");
+                        anotherStudentAssign = "y";
+                        do
+                        {
+                            readResult = Console.ReadLine();
+                            if (readResult != null)
+                                anotherAssign = readResult.ToLower().Trim();
+
+                        } while (anotherAssign != "y" && anotherAssign != "n");
+
+                        }
+
+                        Console.WriteLine("Press any key to continue...");
+                        Console.ReadLine();
+                        break;
+
+                    case "6":
+                        Console.WriteLine("Choose the subject from following details");
+                        subjects = _subjectRepository.GetAllSubjects();
+                        if (subjects.Count != 0)
+                        {
+                            Console.WriteLine("ID\tName");
+                            foreach (var sub in subjects)
+                            {
+                                Console.WriteLine($"{sub.id}\t{sub.name}");
+                            }
+                            do
+                            {
+                                Console.WriteLine("Enter the subject ID : ");
+                                readResult = Console.ReadLine();
+                                if (readResult != null)
+                                {
+                                    subjectId = readResult.ToUpper().Trim();
+                                    subject = _subjectRepository.GetSubjectById(subjectId);
+                                    if (subject == null)
+                                    {
+                                        Console.WriteLine("Invalid Subject ID.");
+                                        subjectId = "";
+                                    }
+
+                                }
+
+                                else
+                                    subjectId = "";
+                            } while (subjectId == "");
+                            Console.WriteLine($"You selected the {subject.name}");
+
+                            studentListOfSubject = subject.students;
+                            Console.WriteLine("Assigned Students : ");
+                            foreach (var std in studentListOfSubject)
+                            {
+                                Console.WriteLine(std.name);
+                            }
+
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("No subjects to select.");
+                        }
+
+                            Console.WriteLine("Press any key to continue...");
+                        Console.ReadLine();
+                        break;
                     case "exit":
                         break;
                     default:
@@ -158,11 +405,7 @@ namespace StudentSubjectApplication.Presentation
 
 
             } while(menuSelection != "exit");
-
-           
-
         }
-
 
     }
 }

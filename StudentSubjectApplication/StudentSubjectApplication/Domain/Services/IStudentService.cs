@@ -9,8 +9,5 @@ namespace StudentSubjectApplication.Domain.Services
 {
     public interface IStudentService
     {
-        void AssignStudentToSubject(string studentId, string subjectId);
-        void RemoveStudentFromSubject(string studentId, string subjectId);
-        List<Subject> GetStudentsOfSubject(string subjectId);
     }
 }
