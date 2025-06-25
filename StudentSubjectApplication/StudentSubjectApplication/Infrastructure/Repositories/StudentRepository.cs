@@ -12,11 +12,10 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
     {
         private List<Student> students = new List<Student>();
 
-        private static int studentIdSeed = 1;
         public void AddStudent(string name, int age, DateOnly dateOfBirth, string address)
         {
-            string id = "ST" + studentIdSeed;
-            studentIdSeed++;
+            int studentCount = students.Count + 1;
+            string id = "ST" + studentCount;
             Student student = new Student(id, name, age, dateOfBirth, address);
             students.Add(student);
         }

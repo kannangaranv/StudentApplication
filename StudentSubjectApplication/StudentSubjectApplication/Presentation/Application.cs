@@ -23,18 +23,21 @@ namespace StudentSubjectApplication.Presentation
         public void Run()
         {
             string studentName = "";
-            string age = "";
-            string dateOfBirth = "";
+            int studentAge = 0;
+            DateOnly dateOfBirth = new DateOnly();
             string address = "";
             string subjectName = "";
 
             string? readResult;
             string menuSelection = "";
+            bool validity = false;
 
             do
-            {
+            { 
                 Console.Clear();
+                Console.WriteLine("-------------------------------------------");
                 Console.WriteLine("Welcome to the Student Subject Application!");
+                Console.WriteLine("-------------------------------------------");
                 Console.WriteLine("Please select an option:");
                 Console.WriteLine("1. Add Student");
                 Console.WriteLine("2. Add Subject");
@@ -62,42 +65,85 @@ namespace StudentSubjectApplication.Presentation
                 switch (menuSelection)
                 {
                     case "1":
-                        do
+                        string anotherStudent = "y";
+
+                        while (anotherStudent == "y")
                         {
-                            Console.WriteLine("Enter student name : ");
-                            readResult = Console.ReadLine();
-                            if (readResult != null)
-                                {
+                            do
+                            {
+                                Console.WriteLine("Enter student name : ");
+                                readResult = Console.ReadLine();
+                                if (readResult != null)
                                     studentName = readResult.Trim();
-                                }
-                            else
-                                {
+                                else
                                     studentName = "";
-                                }
 
-                        } while (studentName != "");
+                            } while (studentName == "");
 
-                        Console.WriteLine("Enter student name:");
-                        studentName = Console.ReadLine();
-                        Console.WriteLine("Enter student age:");
-                        age = Console.ReadLine();
-                        Console.WriteLine("Enter student date of birth (yyyy-mm-dd):");
-                        dateOfBirth = Console.ReadLine();
-                        Console.WriteLine("Enter student address:");
-                        address = Console.ReadLine();
-                        _studentRepository.AddStudent(studentName, age, dateOfBirth, address);
-                        Console.WriteLine("Student added successfully!");
+                            do
+                            {
+                                Console.WriteLine("Enter student age:");
+                                readResult = Console.ReadLine();
+                                if (readResult != null)
+                                    validity = int.TryParse(readResult, out studentAge);
+                                else
+                                    validity = false;
+                            } while (validity == false);
+
+                            do
+                            {
+                                Console.WriteLine("Enter student date of birth (yyyy-mm-dd):");
+                                readResult = Console.ReadLine();
+                                if ( readResult != null)
+                                {
+                                    validity = DateOnly.TryParse(readResult, out dateOfBirth);
+                                    DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+                                    if (validity == true && dateOfBirth > today)
+                                        validity = false;
+                                }                                   
+                                else 
+                                    validity = false;
+                            } while (validity == false);
+
+                            do
+                            {
+                                Console.WriteLine("Enter student address:");
+                                readResult = Console.ReadLine();
+                                if (readResult != null)
+                                    address = readResult.Trim();
+                                else
+                                    address = "";
+                            } while (address == "");
+
+                            _studentRepository.AddStudent(studentName, studentAge, dateOfBirth, address);
+                            Console.WriteLine("Student added successfully!");
+
+                            Console.WriteLine("Do you want to enter another student (y/n)");
+                            do
+                            {
+                                readResult = Console.ReadLine();
+                                if (readResult != null)
+                                    anotherStudent = readResult.Trim().ToLower();
+                            } while (anotherStudent != "y" && anotherStudent != "n");
+                            
+                        }
+         
                         Console.WriteLine("Press any key to continue...");
                         Console.ReadLine();
                         break;
+
                     case "2":
                         // Add subject logic here
                         break;
                     case "3":
                         List<Student> students = _studentRepository.GetAllStudents();
+                        Console.WriteLine("\t\t\t\t---------------------");
+                        Console.WriteLine("\t\t\t\tStudents' Information");
+                        Console.WriteLine("\t\t\t\t---------------------");
                         foreach (var student in students)
                         {
-                            Console.WriteLine($"ID: {student.id}, Name: {student.name}, Age: {student.age}, Date of Birth: {student.dateOfBirth}, Address: {student.address}");
+                            Console.WriteLine("ID\t\tName\t\tAge\t\tDateOfBirth\t\tAddress");
+                            Console.WriteLine($"{student.id}\t\t{student.name}\t\t{student.age}\t\t{student.dateOfBirth}\t\t{student.address}");
                         }
                         Console.WriteLine("Press any key to continue...");
                         Console.ReadLine();
