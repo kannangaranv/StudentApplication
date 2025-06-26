@@ -12,7 +12,7 @@ namespace StudentSubjectApplication.Domain.Repositories
         public void AddStudent(string name, int age, DateOnly dateOfBirth, string Address);
         Student GetStudentById(string id);
         public List<Student> GetAllStudents();
-        //void UpdateStudent(string id, string name, int age, DateOnly dateOfBirth, string Address);
-        //void DeleteStudent(string id);
+        void UpdateStudent(Student student, string name, int age, DateOnly dateOfBirth, string Address);
+        void DeleteStudent(Student student);
     }
 }

@@ -14,8 +14,8 @@ namespace StudentSubjectApplication.Domain.Repositories
         Subject GetSubjectByName(string name);
         List<Subject> GetAllSubjects();
 
-        //void UpdateSubject(string id, string name);
-        //void DeleteSubject(string id);
+        void UpdateSubject(Subject subject, string name);
+        void DeleteSubject(Subject subject);
 
     }
 }

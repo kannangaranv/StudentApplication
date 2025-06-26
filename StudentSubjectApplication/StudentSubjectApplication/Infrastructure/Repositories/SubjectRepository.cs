@@ -11,11 +11,13 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
     public class SubjectRepository : ISubjectRepository
     {
         private List<Subject> allSubjects = new List<Subject>();
+
+        private static int subjectIdSeed = 0;
         public void AddSubject(string name) {
-            int subjectCount = allSubjects.Count + 1;
-            string subjectId = "SUB" + subjectCount;
+            string subjectId = "SUB" + subjectIdSeed;
             Subject subject = new Subject(subjectId, name);
             allSubjects.Add(subject);
+            subjectIdSeed++;
         }
 
         public Subject GetSubjectById(string id)
@@ -36,9 +38,19 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
             }
             return null;
         }
-        
+
+        public void UpdateSubject(Subject subject, string name)
+        {
+            subject.name = name;
+        }
+
         public List<Subject> GetAllSubjects() { 
             return allSubjects; 
+        }
+
+        public void DeleteSubject(Subject subject)
+        {
+            allSubjects.Remove(subject);
         }
     }
 }

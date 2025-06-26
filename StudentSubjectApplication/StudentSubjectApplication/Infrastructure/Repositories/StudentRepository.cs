@@ -12,12 +12,14 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
     {
         private List<Student> students = new List<Student>();
 
+        private static int studentIdSeed = 0;
+
         public void AddStudent(string name, int age, DateOnly dateOfBirth, string address)
         {
-            int studentCount = students.Count + 1;
-            string id = "ST" + studentCount;
+            string id = "ST" + studentIdSeed;
             Student student = new Student(id, name, age, dateOfBirth, address);
             students.Add(student);
+            studentIdSeed++;
         }
 
         public Student GetStudentById(string id)
@@ -31,6 +33,19 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
         public List<Student> GetAllStudents()
         {
             return students;
+        }
+
+        public void UpdateStudent(Student student,string name, int age, DateOnly dateOfBirth, string Address)
+        {
+            student.name = name;
+            student.age = age;
+            student.dateOfBirth = dateOfBirth;
+            student.address = Address;
+        }
+
+        public void DeleteStudent(Student student)
+        {
+            students.Remove(student);
         }
     }
 
