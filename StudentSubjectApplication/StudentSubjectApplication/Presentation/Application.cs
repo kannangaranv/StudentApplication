@@ -165,8 +165,15 @@ namespace StudentSubjectApplication.Presentation
                                     subjectName = "";
                             } while (subjectName == "");
 
-                            _subjectRepository.AddSubject(subjectName);
-                            Console.WriteLine("Student added successfully!");
+                            subject = _subjectRepository.GetSubjectByName(subjectName);
+
+                            if (subject == null)
+                            {
+                                _subjectRepository.AddSubject(subjectName);
+                                Console.WriteLine("Student added successfully!");
+                            }
+                            else
+                                Console.WriteLine($"{subjectName} has Aldready added.");
 
                             do
                             {
@@ -197,7 +204,7 @@ namespace StudentSubjectApplication.Presentation
                         }
                         else
                             Console.WriteLine("No Student Data");
-                            Console.WriteLine("Press any key to continue...");
+                        Console.WriteLine("Press any key to continue...");
                         Console.ReadLine();
                         break;
 
@@ -349,6 +356,7 @@ namespace StudentSubjectApplication.Presentation
                         break;
 
                     case "6":
+                        string anotherSelection = "y";
                         Console.WriteLine("Choose the subject from following details");
                         subjects = _subjectRepository.GetAllSubjects();
                         if (subjects.Count != 0)
@@ -358,35 +366,50 @@ namespace StudentSubjectApplication.Presentation
                             {
                                 Console.WriteLine($"{sub.id}\t{sub.name}");
                             }
-                            do
+                            while (anotherSelection == "y")
                             {
-                                Console.WriteLine("Enter the subject ID : ");
-                                readResult = Console.ReadLine();
-                                if (readResult != null)
+                                do
                                 {
-                                    subjectId = readResult.ToUpper().Trim();
-                                    subject = _subjectRepository.GetSubjectById(subjectId);
-                                    if (subject == null)
+                                    Console.WriteLine("Enter the subject ID : ");
+                                    readResult = Console.ReadLine();
+                                    if (readResult != null)
                                     {
-                                        Console.WriteLine("Invalid Subject ID.");
-                                        subjectId = "";
+                                        subjectId = readResult.ToUpper().Trim();
+                                        subject = _subjectRepository.GetSubjectById(subjectId);
+                                        if (subject == null)
+                                        {
+                                            Console.WriteLine("Invalid Subject ID.");
+                                            subjectId = "";
+                                        }
+
                                     }
 
+                                    else
+                                        subjectId = "";
+                                } while (subjectId == "");
+                                Console.WriteLine($"You selected the {subject.name}");
+
+                                studentListOfSubject = subject.students;
+                                if (studentListOfSubject.Count != 0)
+                                {
+                                    Console.WriteLine("Assigned Students : ");
+                                    foreach (var std in studentListOfSubject)
+                                    {
+                                        Console.WriteLine(std.name);
+                                    }
                                 }
-
                                 else
-                                    subjectId = "";
-                            } while (subjectId == "");
-                            Console.WriteLine($"You selected the {subject.name}");
+                                    Console.WriteLine($"No students assigned to {subject.name}");
 
-                            studentListOfSubject = subject.students;
-                            Console.WriteLine("Assigned Students : ");
-                            foreach (var std in studentListOfSubject)
-                            {
-                                Console.WriteLine(std.name);
+                                Console.WriteLine("Do you want to get the details of students of another subject (y/n) : ");
+                                do
+                                {
+                                    readResult = Console.ReadLine();
+                                    if (readResult != null)
+                                        anotherSelection = readResult.ToLower().Trim();
+                                } while (anotherSelection != "y" && anotherSelection != "n");
+
                             }
-
-
                         }
                         else
                         {

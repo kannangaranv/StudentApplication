@@ -11,6 +11,7 @@ namespace StudentSubjectApplication.Domain.Repositories
     {
         void AddSubject(string name);
         Subject GetSubjectById(string id);
+        Subject GetSubjectByName(string name);
         List<Subject> GetAllSubjects();
 
         //void UpdateSubject(string id, string name);

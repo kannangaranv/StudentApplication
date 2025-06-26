@@ -26,6 +26,16 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
             }
             return null;
         }
+
+        public Subject GetSubjectByName(string name)
+        {
+            foreach (Subject subject in allSubjects)
+            {
+                if ((subject.name).ToLower().Trim() == name.ToLower().Trim())
+                    return subject;
+            }
+            return null;
+        }
         
         public List<Subject> GetAllSubjects() { 
             return allSubjects; 
