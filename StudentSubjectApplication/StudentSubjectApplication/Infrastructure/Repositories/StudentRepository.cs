@@ -10,6 +10,7 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
 {
     public class StudentRepository : IStudentRepository
     {
+        
         private List<Student> students = new List<Student>();
 
         private static int studentIdSeed = 0;
@@ -30,6 +31,7 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
             }
             return null;
         }
+
         public List<Student> GetAllStudents()
         {
             return students;

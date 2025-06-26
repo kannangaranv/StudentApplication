@@ -17,8 +17,5 @@ namespace StudentSubjectApplication.Domain.Entities
             this.id = id;
             this.name = name;
         }
-
-
-
     }
 }

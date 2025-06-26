@@ -14,6 +14,10 @@ namespace StudentSubjectApplication.Domain.Entities
         public DateOnly dateOfBirth { get; set; }
         public string address { get; set; }
 
+        public bool assigned { get; set; }
+
+        public List<Subject> subjects = new List<Subject>();
+
         public Student(string id, string name, int age, DateOnly dateOfBirth, string address)
         {
             this.id = id;

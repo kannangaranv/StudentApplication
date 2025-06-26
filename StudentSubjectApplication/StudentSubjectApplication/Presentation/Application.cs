@@ -6,7 +6,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using StudentSubjectApplication.Domain.Entities;
-using StudentSubjectApplication.Domain.Repositories;
 using StudentSubjectApplication.Infrastructure.Repositories;
 using System.ComponentModel.Design;
 
@@ -14,6 +13,7 @@ namespace StudentSubjectApplication.Presentation
 {
     public class Application
     {
+
         private readonly IStudentRepository _studentRepository;
         private readonly ISubjectRepository _subjectRepository;
 
@@ -40,6 +40,7 @@ namespace StudentSubjectApplication.Presentation
             string subjectId = "";
             string studentId = "";
             List<Student> studentListOfSubject = new List<Student>();
+            List<Subject> subjectListOfStudent = new List<Subject>();
 
             //Sample Data Upload
             string[,] sampleStudents = new string[,] { { "John", "23", "2000-8-9", "America" }, { "Ken", "21", "2000-10-8", "Sri Lanka" }, { "Bob", "21", "2000-10-8", "Sri Lanka" }, { "Ron", "29", "2001-10-8", "India" }, { "Ann", "21", "2011-10-8", "Sri Lanka" } };
@@ -63,13 +64,14 @@ namespace StudentSubjectApplication.Presentation
                 Console.WriteLine("2. Add Subject");
                 Console.WriteLine("3. View All Students");
                 Console.WriteLine("4. View All Subjects");
-                Console.WriteLine("5. Assign Student to Subject");
+                Console.WriteLine("5. Assign Students to Subject");
                 Console.WriteLine("6. List Students of Subject");
-                Console.WriteLine("7. Update Student");
-                Console.WriteLine("8. Update Subject");
-                Console.WriteLine("9. Delete Student");
-                Console.WriteLine("10. Delete Subject");
-                Console.WriteLine("11. Remove Student from Subject");
+                Console.WriteLine("7. List Subjects of Student");
+                Console.WriteLine("8. Update Student");
+                Console.WriteLine("9. Update Subject");
+                Console.WriteLine("10. Delete Student");
+                Console.WriteLine("11. Delete Subject");
+                Console.WriteLine("12. Remove Student from Subject");
                 Console.WriteLine("Type 'exit' to quit the application.");
 
                 readResult = Console.ReadLine();
@@ -310,6 +312,8 @@ namespace StudentSubjectApplication.Presentation
                                             else
                                             {
                                                 studentListOfSubject.Add(student);
+                                                student.assigned = true;
+                                                (student.subjects).Add(subject);
                                                 Console.WriteLine($"{student.name} successfully assigned to {subject.name}");
                                             }
 
@@ -419,7 +423,71 @@ namespace StudentSubjectApplication.Presentation
                         Console.WriteLine("Press any key to continue...");
                         Console.ReadLine();
                         break;
+
                     case "7":
+                        string anotherStudentSelection = "y";
+                        Console.WriteLine("Choose the Student from following details");
+                        students = _studentRepository.GetAllStudents();
+                        if (students.Count != 0)
+                        {
+                            Console.WriteLine("ID\tName");
+                            foreach (var std in students)
+                            {
+                                Console.WriteLine($"{std.id}\t{std.name}");
+                            }
+                            while (anotherStudentSelection == "y")
+                            {
+                                do
+                                {
+                                    Console.WriteLine("Enter the student ID : ");
+                                    readResult = Console.ReadLine();
+                                    if (readResult != null)
+                                    {
+                                        studentId = readResult.ToUpper().Trim();
+                                        student = _studentRepository.GetStudentById(studentId);
+                                        if (student == null)
+                                        {
+                                            Console.WriteLine("Invalid Student ID.");
+                                            studentId = "";
+                                        }
+
+                                    }
+
+                                    else
+                                        studentId = "";
+                                } while (studentId == "");
+
+                                subjectListOfStudent = student.subjects;
+                                if (subjectListOfStudent.Count != 0)
+                                {
+                                    Console.WriteLine($"Subjects of {student.name} :");
+                                    foreach (var sub in subjectListOfStudent)
+                                    {
+                                        Console.WriteLine(sub.name);
+                                    }
+                                }
+                                else
+                                    Console.WriteLine($"No subjects assigned for {student.name}");
+
+                                Console.WriteLine("Do you want to get the details of subjects of another student (y/n) : ");
+                                do
+                                {
+                                    readResult = Console.ReadLine();
+                                    if (readResult != null)
+                                        anotherStudentSelection = readResult.ToLower().Trim();
+                                } while (anotherStudentSelection != "y" && anotherStudentSelection != "n");
+
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("No students to select.");
+                        }
+
+                        Console.WriteLine("Press any key to continue...");
+                        Console.ReadLine();
+                        break;
+                    case "8":
                         string anotherStudentUpdate = "y";
                         while (anotherStudentUpdate == "y")
                         {
@@ -504,7 +572,7 @@ namespace StudentSubjectApplication.Presentation
                         Console.ReadLine();
                         break;
 
-                    case "8":
+                    case "9":
                         string anotherSubjectUpdate = "y";
                         while (anotherSubjectUpdate == "y")
                         {
@@ -537,6 +605,7 @@ namespace StudentSubjectApplication.Presentation
                             } while (subjectName == "");
 
                             _subjectRepository.UpdateSubject(subject, subjectName);
+                            Console.WriteLine("Successfully Updated!");
 
                             Console.WriteLine("Do you want to update another subject (y/n) : ");
                             do
@@ -550,7 +619,7 @@ namespace StudentSubjectApplication.Presentation
                         Console.ReadLine();
                         break;
 
-                    case "9":
+                    case "10":
                         string anotherStudentDelete = "y";
                         while (anotherStudentDelete == "y")
                         {
@@ -572,18 +641,31 @@ namespace StudentSubjectApplication.Presentation
                                     studentId = "";
                             } while (studentId == "");
 
-                            Console.WriteLine($"Do you want to delete {student.name} (y/n) : ");
-                            string confirmDelete = "n";
-                            do {
-                                readResult = Console.ReadLine();
-                                if (readResult != null)
-                                    confirmDelete = readResult.ToLower().Trim();
-                            }while (confirmDelete != "y" && confirmDelete != "n");
-
-                            if (confirmDelete == "y")
+                            if (student.assigned == true)
                             {
-                                _studentRepository.DeleteStudent(student);
-                                Console.WriteLine("Successfully Delected!");
+                                Console.WriteLine($"{student.name} has assigned to following subjects : ");
+                                foreach(var sub in student.subjects)
+                                {
+                                    Console.WriteLine(sub.name);
+                                }
+                                Console.WriteLine($"First remove {student.name} from above subjects.");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Do you want to delete {student.name} (y/n) : ");
+                                string confirmDelete = "n";
+                                do
+                                {
+                                    readResult = Console.ReadLine();
+                                    if (readResult != null)
+                                        confirmDelete = readResult.ToLower().Trim();
+                                } while (confirmDelete != "y" && confirmDelete != "n");
+
+                                if (confirmDelete == "y")
+                                {
+                                    _studentRepository.DeleteStudent(student);
+                                    Console.WriteLine("Successfully Delected!");
+                                }
                             }
 
                             Console.WriteLine("Do you want to remove another student (y/n) : ");
@@ -599,7 +681,7 @@ namespace StudentSubjectApplication.Presentation
                         Console.ReadLine();
                         break;
 
-                    case "10":
+                    case "11":
                         string anotherSubjectDelete = "y";
                         while (anotherSubjectDelete == "y")
                         {
@@ -632,8 +714,9 @@ namespace StudentSubjectApplication.Presentation
                                         confirmDelete = readResult.ToLower().Trim();
                                 } while (confirmDelete != "y" && confirmDelete != "n");
 
-                                if (confirmDelete == "y")
+                                if (confirmDelete == "y")      
                                 {
+                                    _subjectRepository.DeleteSubjectsFromStudentLists(subject);
                                     _subjectRepository.DeleteSubject(subject);
                                     Console.WriteLine("Successfully Deleted!");
                                 }
@@ -650,7 +733,7 @@ namespace StudentSubjectApplication.Presentation
                         Console.ReadLine();
                         break;
 
-                    case "11":
+                    case "12":
                         string anotherStudentUnAssign = "y";
                         string anotherUnAssign = "y";
                         while (anotherUnAssign == "y")

@@ -10,9 +10,11 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
 {
     public class SubjectRepository : ISubjectRepository
     {
+
         private List<Subject> allSubjects = new List<Subject>();
 
         private static int subjectIdSeed = 0;
+
         public void AddSubject(string name) {
             string subjectId = "SUB" + subjectIdSeed;
             Subject subject = new Subject(subjectId, name);
@@ -51,6 +53,16 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
         public void DeleteSubject(Subject subject)
         {
             allSubjects.Remove(subject);
+        }
+
+        public void DeleteSubjectsFromStudentLists(Subject subject)
+        {
+            var studentList = subject.students;
+            foreach(var student in studentList)
+            {
+                student.subjects.Remove(subject);
+            }
+
         }
     }
 }
