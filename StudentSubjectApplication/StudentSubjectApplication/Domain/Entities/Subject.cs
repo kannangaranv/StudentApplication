@@ -10,6 +10,7 @@ namespace StudentSubjectApplication.Domain.Entities
     {
         public string id { get; set; }
         public string name { get; set; }
+        public virtual ICollection<Student> AssignedStudents { get; set; }
         public List<Student> students = new List<Student>();
 
         public Subject(string id, string name)
