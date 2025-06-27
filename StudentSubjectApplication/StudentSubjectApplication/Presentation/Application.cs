@@ -45,15 +45,15 @@ namespace StudentSubjectApplication.Presentation
                 List<Subject> subjectListOfStudent = new List<Subject>();
 
                 //Sample Data Upload
-                string[,] sampleStudents = new string[,] { { "John", "23", "2000-8-9", "America" }, { "Ken", "21", "2000-10-8", "Sri Lanka" }, { "Bob", "21", "2000-10-8", "Sri Lanka" }, { "Ron", "29", "2001-10-8", "India" }, { "Ann", "21", "2011-10-8", "Sri Lanka" } };
-                string[,] sampleSubjects = new string[,] { { "English" }, { "Sinhala" }, { "Tamil" }, { "History" }, { "IT" } };
-                for (int i = 0; i < 5; i++)
-                {
-                    int sampleAge = int.Parse(sampleStudents[i, 1]);
-                    DateOnly sampleDate = DateOnly.Parse(sampleStudents[i, 2]);
-                    _studentRepository.AddStudent(sampleStudents[i, 0], sampleAge, sampleDate, sampleStudents[i, 3]);
-                    _subjectRepository.AddSubject(sampleSubjects[i, 0]);
-                }
+                //string[,] sampleStudents = new string[,] { { "John", "23", "2000-8-9", "America" }, { "Ken", "21", "2000-10-8", "Sri Lanka" }, { "Bob", "21", "2000-10-8", "Sri Lanka" }, { "Ron", "29", "2001-10-8", "India" }, { "Ann", "21", "2011-10-8", "Sri Lanka" } };
+                //string[,] sampleSubjects = new string[,] { { "English" }, { "Sinhala" }, { "Tamil" }, { "History" }, { "IT" } };
+                //for (int i = 0; i < 5; i++)
+                //{
+                //    int sampleAge = int.Parse(sampleStudents[i, 1]);
+                //    DateOnly sampleDate = DateOnly.Parse(sampleStudents[i, 2]);
+                //    _studentRepository.AddStudent(sampleStudents[i, 0], sampleAge, sampleDate, sampleStudents[i, 3]);
+                //    _subjectRepository.AddSubject(sampleSubjects[i, 0]);
+                //}
 
                 do
                 {
@@ -935,8 +935,11 @@ namespace StudentSubjectApplication.Presentation
                 } while (menuSelection != "exit");
 
             }catch (Exception ex)
-            { 
-                Console.WriteLine($"An error occurred: {ex.Message}");
+            {
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine("Inner Exception: " + ex.InnerException.Message);
+                }
             }
         }
 
