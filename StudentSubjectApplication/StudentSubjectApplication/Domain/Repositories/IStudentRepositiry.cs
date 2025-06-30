@@ -9,10 +9,13 @@ namespace StudentSubjectApplication.Domain.Repositories
 {
     public interface IStudentRepository
     {
-        public void AddStudent(string name, int age, DateOnly dateOfBirth, string Address);
+        void AddStudent(string name, int age, DateOnly dateOfBirth, string Address);
         Student GetStudentById(string id);
-        public List<Student> GetAllStudents();
-        void UpdateStudent(Student student, string name, int age, DateOnly dateOfBirth, string Address);
+        List<Student> GetAllStudents();
+        void UpdateStudent(Student student);
         void DeleteStudent(Student student);
+        List<Subject> GetSubjectsofStudent(Student sudent);
+
+        
     }
 }

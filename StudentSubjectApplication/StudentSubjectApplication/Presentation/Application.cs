@@ -288,7 +288,7 @@ namespace StudentSubjectApplication.Presentation
                                     Console.WriteLine($"You selected the {subject.name}");
 
                                     //Select students and assign to the subject
-                                    studentListOfSubject = subject.students;
+                                    studentListOfSubject = _subjectRepository.GetStudentsOfSubject(subject);
 
                                     students = _studentRepository.GetAllStudents();
                                     if (students.Count != 0)
@@ -338,8 +338,15 @@ namespace StudentSubjectApplication.Presentation
                                                 else
                                                 {
                                                     studentListOfSubject.Add(student);
+                                                    if (subject.students == null)
+                                                        subject.students = new List<Student>();
+                                                    (subject.students).Add(student);
+                                                    _subjectRepository.UpdateSubject(subject);
                                                     student.assigned = true;
-                                                    (student.subjects).Add(subject);
+                                                    if (student.subjects == null)
+                                                        student.subjects = new List<Subject>();
+                                                    (student.subjects).Add(subject);          
+                                                    _studentRepository.UpdateStudent(student);
                                                     Console.WriteLine($"{student.name} successfully assigned to {subject.name}");
                                                 }
 
@@ -427,8 +434,10 @@ namespace StudentSubjectApplication.Presentation
                                     Console.WriteLine($"You selected the {subject.name}");
 
                                     //Get the list of students assigned to the subject and display them
-                                    studentListOfSubject = subject.students;
-                                    if (studentListOfSubject.Count != 0)
+                                    studentListOfSubject = _subjectRepository.GetStudentsOfSubject(subject);
+                                    if (studentListOfSubject.Count == 0)
+                                        Console.WriteLine($"No students assigned to {subject.name}");
+                                    else
                                     {
                                         Console.WriteLine("Assigned Students : ");
                                         foreach (var std in studentListOfSubject)
@@ -436,8 +445,6 @@ namespace StudentSubjectApplication.Presentation
                                             Console.WriteLine(std.name);
                                         }
                                     }
-                                    else
-                                        Console.WriteLine($"No students assigned to {subject.name}");
 
                                     //Ask if the user wants to get the details of students of another subject
                                     do
@@ -495,7 +502,7 @@ namespace StudentSubjectApplication.Presentation
                                     } while (studentId == "");
 
                                     //Get the list of subjects assigned to the student and display them
-                                    subjectListOfStudent = student.subjects;
+                                    subjectListOfStudent = _studentRepository.GetSubjectsofStudent(student);
                                     if (subjectListOfStudent.Count != 0)
                                     {
                                         Console.WriteLine($"Subjects of {student.name} :");
@@ -601,7 +608,11 @@ namespace StudentSubjectApplication.Presentation
                                         address = "";
                                 } while (address == "");
 
-                                _studentRepository.UpdateStudent(student, studentName, studentAge, dateOfBirth, address);
+                                student.name = studentName;
+                                student.age = studentAge;
+                                student.dateOfBirth = dateOfBirth;
+                                student.address = address;
+                                _studentRepository.UpdateStudent(student);
                                 Console.WriteLine("Successfully Updated!");
 
                                 //Ask if the user wants to update another student                               
@@ -653,7 +664,8 @@ namespace StudentSubjectApplication.Presentation
                                         subjectName = "";
                                 } while (subjectName == "");
 
-                                _subjectRepository.UpdateSubject(subject, subjectName);
+                                subject.name = subjectName;
+                                _subjectRepository.UpdateSubject(subject);
                                 Console.WriteLine("Successfully Updated!");
 
                                 //Ask if the user wants to update another subject
@@ -697,7 +709,8 @@ namespace StudentSubjectApplication.Presentation
                                 if (student.assigned == true)
                                 {
                                     Console.WriteLine($"{student.name} has assigned to following subjects : ");
-                                    foreach (var sub in student.subjects)
+                                    subjectListOfStudent = _studentRepository.GetSubjectsofStudent(student);
+                                    foreach (var sub in subjectListOfStudent)
                                     {
                                         Console.WriteLine(sub.name);
                                     }
@@ -829,7 +842,7 @@ namespace StudentSubjectApplication.Presentation
                                     } while (subjectId == "");
                                     Console.WriteLine($"You selected the {subject.name}");
 
-                                    studentListOfSubject = subject.students;
+                                    studentListOfSubject = _subjectRepository.GetStudentsOfSubject(subject);
 
                                     if (studentListOfSubject.Count != 0)
                                     {
@@ -867,13 +880,8 @@ namespace StudentSubjectApplication.Presentation
                                             // Check if the student is assigned to the subject and remove the student from the subject
                                             if (studentListOfSubject.Contains(student))
                                             {
-                                                studentListOfSubject.Remove(student);
-                                                subjectListOfStudent = student.subjects;
-                                                subjectListOfStudent.Remove(subject);
-                                                if (studentListOfSubject.Count == 0)
-                                                {
-                                                    student.assigned = false;
-                                                }
+                                                
+                                                _subjectRepository.RemoveSubjectFromStudent(subject, student);
                                                 Console.WriteLine($"{student.name} successfully removed from {subject.name}");
                                             }
                                             else
