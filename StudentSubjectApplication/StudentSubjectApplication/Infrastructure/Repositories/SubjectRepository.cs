@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using StudentSubjectApplication.DAL;
 using StudentSubjectApplication.Domain.Entities;
 using StudentSubjectApplication.Domain.Repositories;
+using StudentSubjectApplication.Infrastructure.DAL;
 
 namespace StudentSubjectApplication.Infrastructure.Repositories
 {
@@ -21,20 +21,8 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
 
         private static int subjectIdSeed = 0;
 
-        public void AddSubject(string name)
+        public void AddSubject(Subject subject)
         {
-            subjectIdSeed = studentContext.Subjects.Count();
-            if(subjectIdSeed == 0) {
-                subjectIdSeed = 0; 
-            } else {
-                Subject lastSubject = studentContext.Subjects.OrderByDescending(s => s.id).FirstOrDefault();
-                if (lastSubject != null)
-                {
-                    subjectIdSeed = int.Parse(lastSubject.id.Substring(3)); 
-                }
-            }
-            string subjectId = "SUB" + (subjectIdSeed + 1);
-            Subject subject = new Subject(subjectId, name);
             studentContext.Subjects.Add(subject);
             studentContext.SaveChanges();
         }
@@ -69,29 +57,29 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
         }
 
         //Remove subject from all students' lists
-        public void DeleteSubjectsFromStudentLists(Subject subject)
-        {
-            var students = studentContext.Students
-                .Include(s => s.subjects)
-                .Where(s => s.subjects.Any(sub => sub.id == subject.id))
-                .ToList();
+        //public void DeleteSubjectsFromStudentLists(Subject subject)
+        //{
+        //    var students = studentContext.Students
+        //        .Include(s => s.subjects)
+        //        .Where(s => s.subjects.Any(sub => sub.id == subject.id))
+        //        .ToList();
 
-            foreach (var student in students)
-            {
-                student.subjects.Remove(subject);
-                if (student.subjects.Count == 0)
-                {
-                    student.assigned = false;
-                }
-            }
-            studentContext.SaveChanges();
-        }
+        //    foreach (var student in students)
+        //    {
+        //        student.subjects.Remove(subject);
+        //        if (student.subjects.Count == 0)
+        //        {
+        //            student.assigned = false;
+        //        }
+        //    }
+        //    studentContext.SaveChanges();
+        //}
 
         // Get all students enrolled in a specific subject
         public List<Student> GetStudentsOfSubject(Subject subject)
         {
             var studentList = studentContext.Students
-                .Where(s => s.subjects.Any(sub => sub.id == subject.id))
+                .Where(s => s.relatedEntities.Any(sub => sub.id == subject.id))
                 .ToList();
             if (studentList != null)
                 return studentList;
@@ -100,33 +88,30 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
         }
 
         // Remove a subject from a student's list and vice versa
-        public void RemoveSubjectFromStudent(Subject subject, Student student)
+        public void RemoveStudentFromSubject(Subject subject, Student student)
         {
-            var std = studentContext.Students
-                .Include(s => s.subjects)
-                .FirstOrDefault(s => s.id == student.id);
-            if (std != null && std.subjects.Contains(subject))
-            {
-                std.subjects.Remove(subject);
-                if (std.subjects.Count == 0)
-                {
-                    std.assigned = false;
-                }
-                studentContext.SaveChanges();
-            }
+            //var std = studentContext.Students
+            //    .Include(s => s.subjects)
+            //    .FirstOrDefault(s => s.id == student.id);
+            //if (std != null && std.subjects.Contains(subject))
+            //{
+            //    std.subjects.Remove(subject);
+            //    if (std.subjects.Count == 0)
+            //    {
+            //        std.assigned = false;
+            //    }
+            //    studentContext.SaveChanges();
+            //}
                 
-
             var sub = studentContext.Subjects
-                .Include(s => s.students)
+                .Include(s => s.relatedEntities)
                 .FirstOrDefault(s => s.id == subject.id);
-            if (sub != null && sub.students.Contains(student))
+            if (sub != null && sub.relatedEntities.Contains(student))
             {
-                sub.students.Remove(student);
+                sub.relatedEntities.Remove(student);
                 studentContext.SaveChanges();
             }
                 
-
-
         }
     }
 

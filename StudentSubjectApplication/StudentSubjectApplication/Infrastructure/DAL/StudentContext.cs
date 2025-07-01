@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace StudentSubjectApplication.DAL
+namespace StudentSubjectApplication.Infrastructure.DAL
 {
     public class StudentContext : DbContext
     {

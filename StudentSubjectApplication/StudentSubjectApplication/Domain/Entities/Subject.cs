@@ -10,7 +10,7 @@ namespace StudentSubjectApplication.Domain.Entities
     {
         public string id { get; set; }
         public string name { get; set; }
-        public virtual List<Student> students { get; set; }
+        public virtual List<Student> relatedEntities { get; set; }
 
         public Subject(string id, string name)
         {

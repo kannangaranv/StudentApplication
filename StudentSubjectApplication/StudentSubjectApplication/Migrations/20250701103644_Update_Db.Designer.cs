@@ -12,8 +12,8 @@ using StudentSubjectApplication.Infrastructure.DAL;
 namespace StudentSubjectApplication.Migrations
 {
     [DbContext(typeof(StudentContext))]
-    [Migration("20250627090528_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250701103644_Update_Db")]
+    partial class Update_Db
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,15 +27,15 @@ namespace StudentSubjectApplication.Migrations
 
             modelBuilder.Entity("StudentSubject", b =>
                 {
-                    b.Property<string>("AssignedStudentsid")
+                    b.Property<string>("relatedEntitiesid")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("AssignedSubjectsid")
+                    b.Property<string>("relatedEntitiesid1")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("AssignedStudentsid", "AssignedSubjectsid");
+                    b.HasKey("relatedEntitiesid", "relatedEntitiesid1");
 
-                    b.HasIndex("AssignedSubjectsid");
+                    b.HasIndex("relatedEntitiesid1");
 
                     b.ToTable("StudentSubject");
                 });
@@ -85,13 +85,13 @@ namespace StudentSubjectApplication.Migrations
                 {
                     b.HasOne("StudentSubjectApplication.Domain.Entities.Student", null)
                         .WithMany()
-                        .HasForeignKey("AssignedStudentsid")
+                        .HasForeignKey("relatedEntitiesid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("StudentSubjectApplication.Domain.Entities.Subject", null)
                         .WithMany()
-                        .HasForeignKey("AssignedSubjectsid")
+                        .HasForeignKey("relatedEntitiesid1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

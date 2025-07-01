@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using StudentSubjectApplication.DAL;
 using StudentSubjectApplication.Domain.Entities;
 using StudentSubjectApplication.Domain.Repositories;
+using StudentSubjectApplication.Infrastructure.DAL;
 
 
 namespace StudentSubjectApplication.Infrastructure.Repositories
@@ -22,22 +22,8 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
 
         private static int studentIdSeed = 0;
 
-        public void AddStudent(string name, int age, DateOnly dateOfBirth, string address)
+        public void AddStudent(Student student)
         {
-            studentIdSeed = studentContext.Students.Count();
-            if (studentIdSeed == 0)
-            {
-                studentIdSeed = 0; 
-            } else
-            {
-                Student lastStudent = studentContext.Students.OrderByDescending(s => s.id).FirstOrDefault();
-                if (lastStudent != null)
-                {
-                    studentIdSeed = int.Parse(lastStudent.id.Substring(2)); 
-                }
-            }
-            string id = "ST" + (studentIdSeed + 1);
-            Student student = new Student(id, name, age, dateOfBirth, address);
             studentContext.Students.Add(student);
             studentContext.SaveChanges();
         }
@@ -69,7 +55,7 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
         public List<Subject> GetSubjectsofStudent(Student student)
         {
             var subjectList = studentContext.Subjects
-                .Where(s => s.students.Any(st => st.id == student.id))
+                .Where(s => s.relatedEntities.Any(st => st.id == student.id))
                 .ToList();
 
             if (subjectList != null )
@@ -78,6 +64,20 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
                 return new List<Subject>();
 
         }
+
+        public void RemoveSubjectFromStudent(Student student, Subject subject)
+        {
+            var studentToUpdate = studentContext.Students
+                .Include(s => s.relatedEntities)
+                .FirstOrDefault(s => s.id == student.id);
+            if (studentToUpdate != null && studentToUpdate.relatedEntities != null)
+            {
+                studentToUpdate.relatedEntities.Remove(subject);
+                studentContext.SaveChanges();
+            }
+        }
+
+
     }
 
 }

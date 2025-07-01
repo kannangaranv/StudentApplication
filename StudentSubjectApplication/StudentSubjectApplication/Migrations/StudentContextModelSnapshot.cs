@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using StudentSubjectApplication.DAL;
+using StudentSubjectApplication.Infrastructure.DAL;
 
 #nullable disable
 
@@ -24,15 +24,15 @@ namespace StudentSubjectApplication.Migrations
 
             modelBuilder.Entity("StudentSubject", b =>
                 {
-                    b.Property<string>("studentsid")
+                    b.Property<string>("relatedEntitiesid")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("subjectsid")
+                    b.Property<string>("relatedEntitiesid1")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("studentsid", "subjectsid");
+                    b.HasKey("relatedEntitiesid", "relatedEntitiesid1");
 
-                    b.HasIndex("subjectsid");
+                    b.HasIndex("relatedEntitiesid1");
 
                     b.ToTable("StudentSubject");
                 });
@@ -82,13 +82,13 @@ namespace StudentSubjectApplication.Migrations
                 {
                     b.HasOne("StudentSubjectApplication.Domain.Entities.Student", null)
                         .WithMany()
-                        .HasForeignKey("studentsid")
+                        .HasForeignKey("relatedEntitiesid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("StudentSubjectApplication.Domain.Entities.Subject", null)
                         .WithMany()
-                        .HasForeignKey("subjectsid")
+                        .HasForeignKey("relatedEntitiesid1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

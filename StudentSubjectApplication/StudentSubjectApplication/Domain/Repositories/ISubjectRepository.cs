@@ -9,15 +9,15 @@ namespace StudentSubjectApplication.Domain.Repositories
 {
     public interface ISubjectRepository
     {
-        void AddSubject(string name);
+        void AddSubject(Subject subject);
         Subject GetSubjectById(string id);
         Subject GetSubjectByName(string name);
         List<Subject> GetAllSubjects();
         void UpdateSubject(Subject subject);
         void DeleteSubject(Subject subject);
-        void DeleteSubjectsFromStudentLists(Subject subject);
+        //void DeleteSubjectsFromStudentLists(Subject subject);
         List<Student> GetStudentsOfSubject(Subject subject);
-        void RemoveSubjectFromStudent(Subject subject, Student student);
+        void RemoveStudentFromSubject(Subject subject, Student student);
 
     }
 }
