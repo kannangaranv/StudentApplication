@@ -10,8 +10,7 @@ namespace StudentSubjectApplication.Domain.Entities
     {
         public string id { get; set; }
         public string name { get; set; }
-        public List<Student> students = new List<Student>();
-
+        public virtual List<Student> relatedEntities { get; set; }
         public Subject(string id, string name)
         {
             this.id = id;
