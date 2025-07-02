@@ -6,8 +6,6 @@ using StudentSubjectApplication.Infrastructure.DAL;
 using StudentSubjectApplication.Domain.Entities;
 
 var serviceProvider = new ServiceCollection()
-    .AddSingleton<IStudentRepository, StudentRepository>()
-    .AddSingleton<ISubjectRepository, SubjectRepository>()
     .AddSingleton<IGenericRepository<Student, Subject>, GenericRepository<Student, Subject>>()
     .AddSingleton<IGenericRepository<Subject, Student>, GenericRepository<Subject, Student>>()
     .AddSingleton<Application>()

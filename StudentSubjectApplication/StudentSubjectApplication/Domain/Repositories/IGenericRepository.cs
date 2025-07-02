@@ -17,7 +17,6 @@ namespace StudentSubjectApplication.Domain.Repositories
         void Update(TEntity entity);
         void Delete(TEntity entity);
         List<TRelatedEntity> GetRelatedEntities(TEntity entity);
-        void RemoveRelatedEntity(TEntity entity,TRelatedEntity relatedEntity);
-        //void DeleteRelatedEntities(TEntity entity);
+        void RemoveRelatedEntity(TEntity entity, TRelatedEntity relatedEntity);
     }
 }

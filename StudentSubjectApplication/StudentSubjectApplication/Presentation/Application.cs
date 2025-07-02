@@ -15,25 +15,13 @@ namespace StudentSubjectApplication.Presentation
     public class Application
     {
 
-        private readonly IStudentRepository _studentRepo;
-        private readonly ISubjectRepository _subjectRepo;
-
-        //public Application(IStudentRepository studentRepository, ISubjectRepository subjectRepository)
-        //{
-        //    _studentRepository1= studentRepository;
-        //    _subjectRepository1= subjectRepository;
-        //}
-
         private readonly IGenericRepository<Student, Subject> _studentRepository;
         private readonly IGenericRepository<Subject, Student> _subjectRepository;
-        public Application(IGenericRepository<Student, Subject> studentRepository, IGenericRepository<Subject, Student> subjectRepository, IStudentRepository studentRepo, ISubjectRepository subjectRepo)
+        public Application(IGenericRepository<Student, Subject> studentRepository, IGenericRepository<Subject, Student> subjectRepository)
         {
             _studentRepository = studentRepository;
             _subjectRepository = subjectRepository;
-            _studentRepo = studentRepo;
-            _subjectRepo = subjectRepo;
         }
-
 
         public void Run()
         {
@@ -50,21 +38,12 @@ namespace StudentSubjectApplication.Presentation
                 bool validity = false;
                 Subject subject = null;
                 Student student = null;
+                List<Student> students = new List<Student>();
+                List<Subject> subjects = new List<Subject>();
                 string subjectId = "";
                 string studentId = "";
                 List<Student> studentListOfSubject = new List<Student>();
                 List<Subject> subjectListOfStudent = new List<Subject>();
-
-                //Sample Data Upload
-                //string[,] sampleStudents = new string[,] { { "John", "23", "2000-8-9", "America" }, { "Ken", "21", "2000-10-8", "Sri Lanka" }, { "Bob", "21", "2000-10-8", "Sri Lanka" }, { "Ron", "29", "2001-10-8", "India" }, { "Ann", "21", "2011-10-8", "Sri Lanka" } };
-                //string[,] sampleSubjects = new string[,] { { "English" }, { "Sinhala" }, { "Tamil" }, { "History" }, { "IT" } };
-                //for (int i = 0; i < 5; i++)
-                //{
-                //    int sampleAge = int.Parse(sampleStudents[i, 1]);
-                //    DateOnly sampleDate = DateOnly.Parse(sampleStudents[i, 2]);
-                //    _studentRepository.AddStudent(sampleStudents[i, 0], sampleAge, sampleDate, sampleStudents[i, 3]);
-                //    _subjectRepository.AddSubject(sampleSubjects[i, 0]);
-                //}
 
                 do
                 {
@@ -156,7 +135,6 @@ namespace StudentSubjectApplication.Presentation
                                         address = "";
                                 } while (address == "");
 
-                                //List<Student> existingStudents = _studentRepository.GetAllStudents();
                                 List<Student> existingStudents = _studentRepository.GetAll();
                                 int studentIdSeed = existingStudents.Count();
                                 if (studentIdSeed == 0)
@@ -174,7 +152,6 @@ namespace StudentSubjectApplication.Presentation
                                 studentId = "ST" + (studentIdSeed + 1);
                                 student = new Student(studentId, studentName, studentAge, dateOfBirth, address);
 
-                                //_studentRepository.AddStudent(student);
                                 _studentRepository.Add(student);
                                 Console.WriteLine("Student added successfully!");
 
@@ -210,13 +187,11 @@ namespace StudentSubjectApplication.Presentation
                                         subjectName = "";
                                 } while (subjectName == "");
 
-                                //subject = _subjectRepository.GetSubjectByName(subjectName);
                                 subject = _subjectRepository.GetByName(subjectName);
 
                                 //Check if the subject already exists and if not add it
                                 if (subject == null)
                                 {
-                                    //List<Subject> existingSubjects = _subjectRepository.GetAllSubjects();
                                     List<Subject> existingSubjects = _subjectRepository.GetAll();
                                     int subjectIdSeed = existingSubjects.Count();
                                     if (subjectIdSeed == 0)
@@ -233,7 +208,6 @@ namespace StudentSubjectApplication.Presentation
                                     }
                                     subjectId = "SUB" + (subjectIdSeed + 1);
                                     subject = new Subject(subjectId, subjectName);
-                                    //_subjectRepository.AddSubject(subject);
                                     _subjectRepository.Add(subject);
                                     Console.WriteLine("Subject added successfully!");
                                 }
@@ -257,8 +231,7 @@ namespace StudentSubjectApplication.Presentation
 
                         // View All Students--------------------------------------------------------------------------------          
                         case "3":
-                            //List<Student> students = _studentRepository.GetAllStudents();
-                            List<Student> students = _studentRepository.GetAll();
+                            students = _studentRepository.GetAll();
                             if (students.Count != 0)
                             {
 
@@ -279,8 +252,7 @@ namespace StudentSubjectApplication.Presentation
 
                         // View All Subjects--------------------------------------------------------------------------------
                         case "4":
-                            //List<Subject> subjects = _subjectRepository.GetAllSubjects();
-                            List<Subject> subjects = _subjectRepository.GetAll();
+                            subjects = _subjectRepository.GetAll();
                             if (subjects.Count != 0)
                             {
                                 Console.WriteLine("---------------------");
@@ -307,7 +279,6 @@ namespace StudentSubjectApplication.Presentation
                             {
                                 Console.WriteLine("Select a subject using following details : ");
                                 //Display all subjects in the application
-                                //subjects = _subjectRepository.GetAllSubjects();
                                 subjects = _subjectRepository.GetAll();
                                 if (subjects.Count != 0)
                                 {
@@ -325,7 +296,6 @@ namespace StudentSubjectApplication.Presentation
                                         if (readResult != null)
                                         {
                                             subjectId = readResult.ToUpper().Trim();
-                                            //subject = _subjectRepository.GetSubjectById(subjectId);
                                             subject = _subjectRepository.GetById(subjectId);
                                             if (subject == null)
                                             {
@@ -341,10 +311,8 @@ namespace StudentSubjectApplication.Presentation
                                     Console.WriteLine($"You selected the {subject.name}");
 
                                     //Select students and assign to the subject
-                                    //studentListOfSubject = _subjectRepository.GetStudentsOfSubject(subject);
                                     studentListOfSubject = _subjectRepository.GetRelatedEntities(subject);
 
-                                    //students = _studentRepository.GetAllStudents();
                                     students = _studentRepository.GetAll();
                                     if (students.Count != 0)
                                     {
@@ -372,7 +340,6 @@ namespace StudentSubjectApplication.Presentation
                                                     if (readResult != null)
                                                     {
                                                         studentId = readResult.ToUpper().Trim();
-                                                        //student = _studentRepository.GetStudentById(studentId);
                                                         student = _studentRepository.GetById(studentId);
                                                         if (student == null)
                                                         {
@@ -397,13 +364,11 @@ namespace StudentSubjectApplication.Presentation
                                                     if (subject.relatedEntities == null)
                                                         subject.relatedEntities = new List<Student>();
                                                     (subject.relatedEntities).Add(student);
-                                                    //_subjectRepository.UpdateSubject(subject);
                                                     _subjectRepository.Update(subject);
                                                     student.assigned = true;
                                                     if (student.relatedEntities == null)
                                                         student.relatedEntities = new List<Subject>();
-                                                    (student.relatedEntities).Add(subject);          
-                                                    //_studentRepository.UpdateStudent(student);
+                                                    (student.relatedEntities).Add(subject);
                                                     _studentRepository.Update(student);
                                                     Console.WriteLine($"{student.name} successfully assigned to {subject.name}");
                                                 }
@@ -458,7 +423,6 @@ namespace StudentSubjectApplication.Presentation
                         case "6":
                             string anotherSelection = "y";
                             Console.WriteLine("Choose the subject from following details");
-                            //subjects = _subjectRepository.GetAllSubjects();
                             subjects = _subjectRepository.GetAll();
                             if (subjects.Count != 0)
                             {
@@ -478,7 +442,6 @@ namespace StudentSubjectApplication.Presentation
                                         if (readResult != null)
                                         {
                                             subjectId = readResult.ToUpper().Trim();
-                                            //subject = _subjectRepository.GetSubjectById(subjectId);
                                             subject = _subjectRepository.GetById(subjectId);
                                             if (subject == null)
                                             {
@@ -494,7 +457,6 @@ namespace StudentSubjectApplication.Presentation
                                     Console.WriteLine($"You selected the {subject.name}");
 
                                     //Get the list of students assigned to the subject and display them
-                                    //studentListOfSubject = _subjectRepository.GetStudentsOfSubject(subject);
                                     studentListOfSubject = _subjectRepository.GetRelatedEntities(subject);
                                     if (studentListOfSubject.Count == 0)
                                         Console.WriteLine($"No students assigned to {subject.name}");
@@ -531,7 +493,6 @@ namespace StudentSubjectApplication.Presentation
                         case "7":
                             string anotherStudentSelection = "y";
                             Console.WriteLine("Choose the Student from following details");
-                            //students = _studentRepository.GetAllStudents();
                             students = _studentRepository.GetAll();
                             if (students.Count != 0)
                             {
@@ -551,7 +512,6 @@ namespace StudentSubjectApplication.Presentation
                                         if (readResult != null)
                                         {
                                             studentId = readResult.ToUpper().Trim();
-                                            //student = _studentRepository.GetStudentById(studentId);
                                             student = _studentRepository.GetById(studentId);
                                             if (student == null)
                                             {
@@ -565,7 +525,6 @@ namespace StudentSubjectApplication.Presentation
                                     } while (studentId == "");
 
                                     //Get the list of subjects assigned to the student and display them
-                                    //subjectListOfStudent = _studentRepository.GetSubjectsofStudent(student);
                                     subjectListOfStudent = _studentRepository.GetRelatedEntities(student);
                                     if (subjectListOfStudent.Count != 0)
                                     {
@@ -600,9 +559,18 @@ namespace StudentSubjectApplication.Presentation
 
                         // Update Student---------------------------------------------------------------------------------
                         case "8":
+                            students = _studentRepository.GetAll();
+                            if(students.Count == 0)
+                            {
+                                Console.WriteLine("No students to update.");
+                                Console.WriteLine("Press any key to continue...");
+                                Console.ReadLine();
+                                break;
+                            }
                             string anotherStudentUpdate = "y";
                             while (anotherStudentUpdate == "y")
                             {
+
                                 //Select a student with valid ID
                                 do
                                 {
@@ -611,7 +579,6 @@ namespace StudentSubjectApplication.Presentation
                                     if (readResult != null)
                                     {
                                         studentId = readResult.ToUpper().Trim();
-                                        //student = _studentRepository.GetStudentById(studentId);
                                         student = _studentRepository.GetById(studentId);
                                         if (student == null)
                                         {
@@ -677,7 +644,6 @@ namespace StudentSubjectApplication.Presentation
                                 student.age = studentAge;
                                 student.dateOfBirth = dateOfBirth;
                                 student.address = address;
-                                //_studentRepository.UpdateStudent(student);
                                 _studentRepository.Update(student);
                                 Console.WriteLine("Successfully Updated!");
 
@@ -697,6 +663,14 @@ namespace StudentSubjectApplication.Presentation
 
                         // Update Subject---------------------------------------------------------------------------------
                         case "9":
+                            subjects = _subjectRepository.GetAll();
+                            if (subjects.Count == 0)
+                            {
+                                Console.WriteLine("No subjects to update.");
+                                Console.WriteLine("Press any key to continue...");
+                                Console.ReadLine();
+                                break;
+                            }
                             string anotherSubjectUpdate = "y";
                             while (anotherSubjectUpdate == "y")
                             {
@@ -708,7 +682,6 @@ namespace StudentSubjectApplication.Presentation
                                     if (readResult != null)
                                     {
                                         subjectId = readResult.ToUpper().Trim();
-                                        //subject = _subjectRepository.GetSubjectById(subjectId);
                                         subject = _subjectRepository.GetById(subjectId);
                                         if (subject == null)
                                         {
@@ -732,7 +705,6 @@ namespace StudentSubjectApplication.Presentation
                                 } while (subjectName == "");
 
                                 subject.name = subjectName;
-                                //_subjectRepository.UpdateSubject(subject);
                                 _subjectRepository.Update(subject);
                                 Console.WriteLine("Successfully Updated!");
 
@@ -751,6 +723,14 @@ namespace StudentSubjectApplication.Presentation
 
                         // Delete Student---------------------------------------------------------------------------------
                         case "10":
+                            students = _studentRepository.GetAll();
+                            if (students.Count == 0)
+                            {
+                                Console.WriteLine("No students to delete.");
+                                Console.WriteLine("Press any key to continue...");
+                                Console.ReadLine();
+                                break;
+                            }
                             string anotherStudentDelete = "y";
                             while (anotherStudentDelete == "y")
                             {
@@ -762,7 +742,6 @@ namespace StudentSubjectApplication.Presentation
                                     if (readResult != null)
                                     {
                                         studentId = readResult.ToUpper().Trim();
-                                        //student = _studentRepository.GetStudentById(studentId);
                                         student = _studentRepository.GetById(studentId);
                                         if (student == null)
                                         {
@@ -778,7 +757,6 @@ namespace StudentSubjectApplication.Presentation
                                 if (student.assigned == true)
                                 {
                                     Console.WriteLine($"{student.name} has assigned to following subjects : ");
-                                    //subjectListOfStudent = _studentRepository.GetSubjectsofStudent(student);
                                     subjectListOfStudent = _studentRepository.GetRelatedEntities(student);
                                     foreach (var sub in subjectListOfStudent)
                                     {
@@ -800,7 +778,6 @@ namespace StudentSubjectApplication.Presentation
 
                                     if (confirmDelete == "y")
                                     {
-                                        //_studentRepository.DeleteStudent(student);
                                         _studentRepository.Delete(student);
                                         Console.WriteLine("Successfully Delected!");
                                     }
@@ -822,6 +799,14 @@ namespace StudentSubjectApplication.Presentation
 
                         // Delete Subject---------------------------------------------------------------------------------
                         case "11":
+                            subjects = _subjectRepository.GetAll();
+                            if (subjects.Count == 0)
+                            {
+                                Console.WriteLine("No subjects to delete.");
+                                Console.WriteLine("Press any key to continue...");
+                                Console.ReadLine();
+                                break;
+                            }
                             string anotherSubjectDelete = "y";
                             while (anotherSubjectDelete == "y")
                             {
@@ -833,7 +818,6 @@ namespace StudentSubjectApplication.Presentation
                                     if (readResult != null)
                                     {
                                         subjectId = readResult.ToUpper().Trim();
-                                        //subject = _subjectRepository.GetSubjectById(subjectId);
                                         subject = _subjectRepository.GetById(subjectId);
                                         if (subject == null)
                                         {
@@ -857,27 +841,21 @@ namespace StudentSubjectApplication.Presentation
                                 if (confirmDelete == "y")
                                 {
                                     //Check if the subject is assigned to any students, if assigned, remove the subject from the students' lists
-                                    //_subjectRepository.DeleteSubjectsFromStudentLists(subject);
-                                    //studentListOfSubject = _subjectRepository.GetStudentsOfSubject(subject);
                                     studentListOfSubject = _subjectRepository.GetRelatedEntities(subject);
 
-                                    //foreach (var std in studentListOfSubject)
-                                    //{
-                                    //    //subjectListOfStudent = _studentRepository.GetSubjectsofStudent(std);
-                                    //    subjectListOfStudent = _studentRepository.GetRelatedEntities(std);
-                                    //    //_subjectRepository.RemoveStudentFromSubject(subject, std);
-                                    //    _subjectRepository.RemoveRelatedEntity(subject, std);
-                                    //    subjectListOfStudent.Remove(subject);
-                                    //    if(subjectListOfStudent.Count == 0)
-                                    //    {
-                                    //        std.assigned = false;
-                                    //        //_studentRepository.UpdateStudent(std);
-                                    //        _studentRepository.Update(std);
-                                    //    }
-                                                           
-                                    //}
+                                    foreach (var std in studentListOfSubject)
+                                    {
+                                        subjectListOfStudent = _studentRepository.GetRelatedEntities(std);
+                                        _subjectRepository.RemoveRelatedEntity(subject, std);
+                                        subjectListOfStudent.Remove(subject);
+                                        if (subjectListOfStudent.Count == 0)
+                                        {
+                                            std.assigned = false;
+                                            _studentRepository.Update(std);
+                                        }
 
-                                    //_subjectRepository.DeleteSubject(subject);
+                                    }
+
                                     _subjectRepository.Delete(subject);
                                     Console.WriteLine("Successfully Deleted!");
                                 }
@@ -902,7 +880,6 @@ namespace StudentSubjectApplication.Presentation
                             while (anotherUnAssign == "y")
                             {
                                 Console.WriteLine("Select the subject that student needed to remove using following details : ");
-                                //subjects = _subjectRepository.GetAllSubjects();
                                 subjects = _subjectRepository.GetAll();
                                 if (subjects.Count != 0)
                                 {
@@ -921,7 +898,6 @@ namespace StudentSubjectApplication.Presentation
                                         if (readResult != null)
                                         {
                                             subjectId = readResult.ToUpper().Trim();
-                                            //subject = _subjectRepository.GetSubjectById(subjectId);
                                             subject = _subjectRepository.GetById(subjectId);
                                             if (subject == null)
                                             {
@@ -936,7 +912,6 @@ namespace StudentSubjectApplication.Presentation
                                     } while (subjectId == "");
                                     Console.WriteLine($"You selected the {subject.name}");
 
-                                    //studentListOfSubject = _subjectRepository.GetStudentsOfSubject(subject);
                                     studentListOfSubject = _subjectRepository.GetRelatedEntities(subject);
 
                                     if (studentListOfSubject.Count != 0)
@@ -960,7 +935,6 @@ namespace StudentSubjectApplication.Presentation
                                                 if (readResult != null)
                                                 {
                                                     studentId = readResult.ToUpper().Trim();
-                                                    //student = _studentRepository.GetStudentById(studentId);
                                                     student = _studentRepository.GetById(studentId);
                                                     if (student == null)
                                                     {
@@ -976,18 +950,14 @@ namespace StudentSubjectApplication.Presentation
                                             // Check if the student is assigned to the subject and remove the student from the subject
                                             if (studentListOfSubject.Contains(student))
                                             {
-                                                //subjectListOfStudent = _studentRepository.GetRelatedEntities(student);
-                                                _subjectRepo.RemoveStudentFromSubject(subject, student);
+                                                subjectListOfStudent = _studentRepository.GetRelatedEntities(student);
                                                 _subjectRepository.RemoveRelatedEntity(subject, student);
-                                                //subjectListOfStudent = _studentRepository.GetSubjectsofStudent(student);
-
-                                                _studentRepo.RemoveSubjectFromStudent(student, subject);
-                                                //_studentRepository.RemoveRelatedEntity(student, subject);
+                                                _studentRepository.RemoveRelatedEntity(student, subject);
                                                 subjectListOfStudent.Remove(subject);
+                                                studentListOfSubject.Remove(student);
                                                 if (subjectListOfStudent.Count == 0)
                                                 {
                                                     student.assigned = false;
-                                                    //_studentRepository.UpdateStudent(student);
                                                     _studentRepository.Update(student);
                                                 }
                              

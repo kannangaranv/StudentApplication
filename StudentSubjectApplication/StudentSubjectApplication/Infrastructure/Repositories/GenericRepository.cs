@@ -43,7 +43,7 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
         public TEntity GetByName(string name)
         {
             TEntity entity = dbSet1
-                .FirstOrDefault(e => EF.Property<string>(e,"name").ToLower().Trim() == name.ToLower().Trim());
+                .FirstOrDefault(e => EF.Property<string>(e, "name").ToLower().Trim() == name.ToLower().Trim());
             return entity;
         }
 
@@ -79,8 +79,20 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
         public void RemoveRelatedEntity(TEntity entity, TRelatedEntity relatedEntity)
         {
             
-        }
+            var entityId = entity.GetType().GetProperty("id")?.GetValue(entity)?.ToString();
 
+            var entityInDb = dbSet1
+                .Include(e => EF.Property<IEnumerable<TRelatedEntity>>(e, "relatedEntities"))
+                .FirstOrDefault(e => EF.Property<string>(e, "id") == entityId);
+
+            var relatedList = entityInDb.GetType().GetProperty("relatedEntities").GetValue(entityInDb) as IList<TRelatedEntity>;
+
+            if (relatedList != null && relatedList.Contains(relatedEntity))
+            {
+                relatedList.Remove(relatedEntity);
+                context.SaveChanges();
+            }
+        }
 
     }
 }
