@@ -25,6 +25,6 @@ namespace StudentSubjectApplication.Domain.Repositories
         List<TRelatedEntity> GetRelatedEntities(TEntity entity);
         Task<List<TRelatedEntity>> GetRelatedEntitiesAsync(TEntity entity);
         void RemoveRelatedEntity(TEntity entity, TRelatedEntity relatedEntity);
-        Task RemoveRelatedEntityAsync(TEntity entity, TRelatedEntity relatedEntity);
+        //Task RemoveRelatedEntityAsync(TEntity entity, TRelatedEntity relatedEntity);
     }
 }

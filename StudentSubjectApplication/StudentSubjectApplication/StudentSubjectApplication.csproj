@@ -19,6 +19,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.6" />
     <PackageReference Include="Microsoft.Graph" Version="5.83.0" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="3.9.4" />
   </ItemGroup>
 
 </Project>

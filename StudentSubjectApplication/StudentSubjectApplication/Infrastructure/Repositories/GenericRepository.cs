@@ -140,19 +140,19 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
             }
         }
 
-        public async Task RemoveRelatedEntityAsync(TEntity entity, TRelatedEntity relatedEntity)
-        {
-            var entityId = entity.GetType().GetProperty("id")?.GetValue(entity)?.ToString();
-            var entityInDb = await dbSet1
-                .Include(e => EF.Property<IEnumerable<TRelatedEntity>>(e, "relatedEntities"))
-                .FirstOrDefaultAsync(e => EF.Property<string>(e, "id") == entityId);
-            var relatedList = entityInDb.GetType().GetProperty("relatedEntities").GetValue(entityInDb) as IList<TRelatedEntity>;
-            if (relatedList != null && relatedList.Contains(relatedEntity))
-            {
-                relatedList.Remove(relatedEntity);
-                await context.SaveChangesAsync();
-            }
-        }
+        //public async Task RemoveRelatedEntityAsync(TEntity entity, TRelatedEntity relatedEntity)
+        //{
+        //    var entityId = entity.GetType().GetProperty("id")?.GetValue(entity)?.ToString();
+        //    var entityInDb = await dbSet1
+        //        .Include(e => EF.Property<IEnumerable<TRelatedEntity>>(e, "relatedEntities"))
+        //        .FirstOrDefaultAsync(e => EF.Property<string>(e, "id") == entityId);
+        //    var relatedList = entityInDb.GetType().GetProperty("relatedEntities").GetValue(entityInDb) as IList<TRelatedEntity>;
+        //    if (relatedList != null && relatedList.Contains(relatedEntity))
+        //    {
+        //        relatedList.Remove(relatedEntity);
+        //        await context.SaveChangesAsync();
+        //    }
+        //}
 
     }
 }
