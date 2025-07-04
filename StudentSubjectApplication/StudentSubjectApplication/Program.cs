@@ -1,38 +1,34 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using StudentSubjectApplication.Domain.Repositories;
-using StudentSubjectApplication.Infrastructure.Repositories;
-using StudentSubjectApplication.Infrastructure.DAL;
-using StudentSubjectApplication.Domain.Entities;
-using StudentSubjectApplication.Presentation.Controller;
+using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
+using StudentSubjectApplication.Domain.Entities;
+using StudentSubjectApplication.Domain.Repositories;
+using StudentSubjectApplication.Infrastructure.DAL;
+using StudentSubjectApplication.Infrastructure.Repositories;
+using StudentSubjectApplication.Presentation.Controller;
 
-
-//var serviceProvider = new ServiceCollection()
-//    .AddSingleton<IGenericRepository<Student, Subject>, GenericRepository<Student, Subject>>()
-//    .AddSingleton<IGenericRepository<Subject, Student>, GenericRepository<Subject, Student>>()
-//    .AddSingleton<Application>()
-//    .AddSingleton<StudentContext>()
-//    .BuildServiceProvider();
-
-
-//var application = serviceProvider.GetRequiredService<Application>();
-//application.Run();
-
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+builder.Services.AddHttpClient();
 
 builder.Services.AddSingleton<IGenericRepository<Student, Subject>, GenericRepository<Student, Subject>>();
 builder.Services.AddSingleton<IGenericRepository<Subject, Student>, GenericRepository<Subject, Student>>();
 builder.Services.AddSingleton<StudentContext>();
 
-builder.WebHost.UseUrls("http://localhost:5000");
+builder.Services.AddAuthorization();
+
+var hostUrl = Environment.GetEnvironmentVariable("HOST_URL");
+builder.WebHost.UseUrls(hostUrl);
 
 var app = builder.Build();
 
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapEndpoints();
 
