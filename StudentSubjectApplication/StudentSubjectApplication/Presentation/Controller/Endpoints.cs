@@ -81,6 +81,7 @@ namespace StudentSubjectApplication.Presentation.Controller
             subjectGroup.MapGet("/GetRelatedStudents/{id}", GetRelatedStudents).RequireAuthorization();
             subjectGroup.MapPost("/assignStudent/{subjectId}/{studentId}", AssignStudent).RequireAuthorization();
             subjectGroup.MapDelete("/UnassignStudent/{subjectId}/{studentId}", UnassignStudent).RequireAuthorization();
+            subjectGroup.MapGet("/CheckNameExists/{name}", CheckSubjectExist).RequireAuthorization();
 
 
             // Get all students
@@ -324,6 +325,27 @@ namespace StudentSubjectApplication.Presentation.Controller
                     return Results.Problem(ex.Message);
                 }
 
+            }
+
+            // Check the subject exist or not
+            static async Task<IResult> CheckSubjectExist(string name, IGenericRepository<Subject, Student> repository)
+            {
+                try
+                {
+                    var subject = await repository.GetByNameAsync(name);
+                    if (subject != null)
+                    {
+                        return Results.Ok(new { nameExist = true });
+                    }
+                    else
+                    {
+                        return Results.Ok(new {nameExist = false} );
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
             }
 
             // Add a new subject
