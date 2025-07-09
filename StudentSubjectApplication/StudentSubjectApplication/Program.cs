@@ -22,6 +22,19 @@ builder.Services.AddSingleton<StudentContext>();
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+
+
+
 var hostUrl = Environment.GetEnvironmentVariable("HOST_URL");
 builder.WebHost.UseUrls(hostUrl);
 
@@ -29,6 +42,7 @@ var app = builder.Build();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseCors();
 
 app.MapEndpoints();
 

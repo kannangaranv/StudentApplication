@@ -4,11 +4,11 @@
     {
         public string id { get; set; }
         public string name { get; set; }
-        public DateOnly dateOfBirth { get; set; }
+        public string dateOfBirth { get; set; }
         public int age { get; set; }
         public string address { get; set; }
 
-        public StudentDTO(string id, string name, DateOnly dateOfBirth, int age, string address)
+        public StudentDTO(string id, string name, String dateOfBirth, int age, string address)
         {
             this.id = id;
             this.name = name;

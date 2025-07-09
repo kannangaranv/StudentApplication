@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Graph.ApplicationsWithAppId;
+using Microsoft.Graph.Education.Classes.Item.Assignments.Item.Submissions.Item.Return;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using StudentSubjectApplication.Domain.Entities;
@@ -19,21 +20,13 @@ namespace StudentSubjectApplication.Presentation.Controller
             var scope = Environment.GetEnvironmentVariable("APPLICATION_ID_URI");
             var clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET");
 
-            //Get the access Token 
-            app.MapGet("/getAccessToken", () =>
+            app.MapGet("/hello", () =>
             {
-                var url = $"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/authorize" +
-                          $"?client_id={clientId}" +
-                          $"&response_type=code" +
-                          $"&redirect_uri={Uri.EscapeDataString(redirectUri)}" +
-                          $"&response_mode=query" +
-                          $"&scope={Uri.EscapeDataString(scope)}";
-
-                return Results.Redirect(url);
+                return Results.Ok(new {access_token = "hello" });
             });
 
-
-            app.MapGet("/", async (HttpContext context) =>
+           
+            app.MapGet("/getAccessToken", async (HttpContext context) =>
             {
                 var code = context.Request.Query["code"].ToString();
                 var apiAppId = Environment.GetEnvironmentVariable("APPLICATION_API_ID"); 
@@ -100,7 +93,8 @@ namespace StudentSubjectApplication.Presentation.Controller
 
                     foreach (var student in students)
                     {
-                        var studentDTO = new StudentDTO(student.id, student.name, student.dateOfBirth, student.age, student.address);
+                        var dateOfBirth = string.Concat(student.dateOfBirth.Year, "-", student.dateOfBirth.Month, "-", student.dateOfBirth.Day);
+                        var studentDTO = new StudentDTO(student.id, student.name, dateOfBirth, student.age, student.address);
                         studentDTOs.Add(studentDTO);
                     }
 
@@ -123,7 +117,8 @@ namespace StudentSubjectApplication.Presentation.Controller
                     var student = await repository.GetByIdAsync(id);
                     if (student != null)
                     {
-                        var studentDTO = new StudentDTO(student.id, student.name, student.dateOfBirth, student.age, student.address);
+                        var dateOfBirth = string.Concat(student.dateOfBirth.Year, "-", student.dateOfBirth.Month, "-", student.dateOfBirth.Day);
+                        var studentDTO = new StudentDTO(student.id, student.name, dateOfBirth, student.age, student.address);
                         return Results.Ok(studentDTO);
                     }
                     else
@@ -144,7 +139,8 @@ namespace StudentSubjectApplication.Presentation.Controller
                     var student = await repository.GetByNameAsync(name);
                     if (student != null)
                     {
-                        var studentDTO = new StudentDTO(student.id, student.name, student.dateOfBirth, student.age, student.address);
+                        var dateOfBirth = string.Concat(student.dateOfBirth.Year, "-", student.dateOfBirth.Month, "-", student.dateOfBirth.Day);
+                        var studentDTO = new StudentDTO(student.id, student.name, dateOfBirth, student.age, student.address);
                         return Results.Ok(studentDTO);
                     }
                     else
@@ -180,7 +176,7 @@ namespace StudentSubjectApplication.Presentation.Controller
                     var dateOfBirth = DateOnly.Parse(studentDTO.dateOfBirth);
                     var student = new Student(studentId, studentDTO.name, studentDTO.age, dateOfBirth, studentDTO.address);
                     repository.AddAsync(student);
-                    return Results.Created("", new StudentDTO(student.id, student.name, student.dateOfBirth, student.age, student.address));
+                    return Results.Created("", new StudentDTO(student.id, student.name, studentDTO.dateOfBirth, student.age, student.address));
                 }
                 catch (Exception ex)
                 {
@@ -202,7 +198,7 @@ namespace StudentSubjectApplication.Presentation.Controller
                         student.dateOfBirth = DateOnly.Parse(studentDTO.dateOfBirth);
                         student.address = studentDTO.address;
                         await repository.UpdateAsync(student);
-                        return Results.Ok(new StudentDTO(id, student.name, student.dateOfBirth, student.age, student.address));
+                        return Results.Ok(new StudentDTO(id, student.name, studentDTO.dateOfBirth, student.age, student.address));
                     }
                     else
                     {
@@ -421,7 +417,8 @@ namespace StudentSubjectApplication.Presentation.Controller
 
                     foreach (var student in students)
                     {
-                        var studentDTO = new StudentDTO(student.id, student.name, student.dateOfBirth, student.age, student.address);
+                        var dateOfBirth = string.Concat(student.dateOfBirth.Year, "-", student.dateOfBirth.Month, "-", student.dateOfBirth.Day);
+                        var studentDTO = new StudentDTO(student.id, student.name, dateOfBirth, student.age, student.address);
                         studentDTOs.Add(studentDTO);
                     }
 
