@@ -20,12 +20,6 @@ namespace StudentSubjectApplication.Presentation.Controller
             var scope = Environment.GetEnvironmentVariable("APPLICATION_ID_URI");
             var clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET");
 
-            app.MapGet("/hello", () =>
-            {
-                return Results.Ok(new {access_token = "hello" });
-            });
-
-           
             app.MapGet("/getAccessToken", async (HttpContext context) =>
             {
                 var code = context.Request.Query["code"].ToString();
