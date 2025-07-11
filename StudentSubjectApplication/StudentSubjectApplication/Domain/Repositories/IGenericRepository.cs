@@ -10,13 +10,12 @@ namespace StudentSubjectApplication.Domain.Repositories
         where TEntity : class 
         where TRelatedEntity : class
     {
-        void Add(TEntity entity);
-        TEntity GetById(string id);
-        TEntity GetByName(string name);
-        List<TEntity> GetAll();
-        void Update(TEntity entity);
-        void Delete(TEntity entity);
-        List<TRelatedEntity> GetRelatedEntities(TEntity entity);
-        void RemoveRelatedEntity(TEntity entity, TRelatedEntity relatedEntity);
+        Task AddAsync(TEntity entity);
+        Task<TEntity> GetByIdAsync(string id);
+        Task<TEntity> GetByNameAsync(string name);
+        Task<List<TEntity>> GetAllAsync();
+        Task UpdateAsync(TEntity entity);
+        Task DeleteAsync(TEntity entity);
+        Task<List<TRelatedEntity>> GetRelatedEntitiesAsync(TEntity entity);
     }
 }

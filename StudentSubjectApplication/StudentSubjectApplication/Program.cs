@@ -1,16 +1,45 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using StudentSubjectApplication.Domain.Repositories;
-using StudentSubjectApplication.Infrastructure.Repositories;
-using StudentSubjectApplication.Presentation;
-using StudentSubjectApplication.Infrastructure.DAL;
+using DotNetEnv;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web;
 using StudentSubjectApplication.Domain.Entities;
+using StudentSubjectApplication.Domain.Repositories;
+using StudentSubjectApplication.Infrastructure.DAL;
+using StudentSubjectApplication.Infrastructure.Repositories;
+using StudentSubjectApplication.Presentation.Controller;
 
-var serviceProvider = new ServiceCollection()
-    .AddSingleton<IGenericRepository<Student, Subject>, GenericRepository<Student, Subject>>()
-    .AddSingleton<IGenericRepository<Subject, Student>, GenericRepository<Subject, Student>>()
-    .AddSingleton<Application>()
-    .AddSingleton<StudentContext>()
-    .BuildServiceProvider();
+Env.Load();
 
-var application = serviceProvider.GetRequiredService<Application>();
-application.Run();
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+builder.Services.AddHttpClient();
+
+builder.Services.AddSingleton<IGenericRepository<Student, Subject>, GenericRepository<Student, Subject>>();
+builder.Services.AddSingleton<IGenericRepository<Subject, Student>, GenericRepository<Subject, Student>>();
+builder.Services.AddSingleton<StudentContext>();
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost",
+        policy => policy
+            .WithOrigins("http://localhost:4401")
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
+var hostUrl = Environment.GetEnvironmentVariable("HOST_URL");
+builder.WebHost.UseUrls(hostUrl);
+
+var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseCors("AllowLocalhost");
+
+app.MapEndpoints();
+
+app.Run();

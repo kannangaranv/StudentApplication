@@ -14,7 +14,8 @@ namespace StudentSubjectApplication.Infrastructure.DAL
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=NUWANK-BP;Database=StudentDB;Trusted_Connection=SSPI;Encrypt=false;TrustServerCertificate=true");
+            string connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+            optionsBuilder.UseSqlServer(connectionString);
 
         }
     }
