@@ -79,7 +79,7 @@ namespace StudentSubjectApplication.Presentation.Controller
             subjectGroup.MapPut("/Update/{id}", UpdateSubject).RequireAuthorization();
             subjectGroup.MapDelete("/Delete/{id}", DeleteSubject).RequireAuthorization();
             subjectGroup.MapGet("/GetRelatedStudents/{id}", GetRelatedStudents).RequireAuthorization();
-            subjectGroup.MapGet("/GetUnRelatedStudents/{id}", GetRelatedStudents).RequireAuthorization();
+            subjectGroup.MapGet("/GetUnRelatedStudents/{id}", GetUnRelatedStudents).RequireAuthorization();
             subjectGroup.MapPost("/assignStudent/{subjectId}/{studentId}", AssignStudent).RequireAuthorization();
             subjectGroup.MapDelete("/UnassignStudent/{subjectId}/{studentId}", UnassignStudent).RequireAuthorization();
             subjectGroup.MapGet("/CheckNameExists/{name}", CheckSubjectExist).RequireAuthorization();
@@ -453,7 +453,35 @@ namespace StudentSubjectApplication.Presentation.Controller
                 }
             }
 
-            
+            // Get unrelated students for a subject
+            static async Task<IResult> GetUnRelatedStudents(string id, IGenericRepository<Subject, Student> subjectRepository, IGenericRepository<Student, Subject> studentRepository)
+            {
+                try
+                {
+                    var subject = await subjectRepository.GetByIdAsync(id);
+                    if (subject == null)
+                    {
+                        return Results.NotFound("Subject not found.");
+                    }
+                    var allStudents = await studentRepository.GetAllAsync();
+                    var relatedStudents = await subjectRepository.GetRelatedEntitiesAsync(subject);
+                    var unRelatedStudents = allStudents.Where(s => !relatedStudents.Any(rs => rs.id == s.id)).ToList();
+                    List<StudentDTO> studentDTOs = new List<StudentDTO>();
+                    foreach (var student in unRelatedStudents)
+                    {
+                        var dateOfBirth = string.Concat(student.dateOfBirth.Year, "-", student.dateOfBirth.Month, "-", student.dateOfBirth.Day);
+                        var studentDTO = new StudentDTO(student.id, student.name, dateOfBirth, student.age, student.address);
+                        studentDTOs.Add(studentDTO);
+                    }
+                    return Results.Ok(studentDTOs);
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            }
+
+
 
             // Assign a student to a subject
             static async Task<IResult> AssignStudent(string studentId, string subjectId, IGenericRepository<Student, Subject> studentRepository, IGenericRepository<Subject, Student> subjectRepository)
