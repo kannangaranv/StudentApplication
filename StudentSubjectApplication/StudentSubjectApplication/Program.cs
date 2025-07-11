@@ -31,9 +31,6 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader());
 });
 
-
-
-
 var hostUrl = Environment.GetEnvironmentVariable("HOST_URL");
 builder.WebHost.UseUrls(hostUrl);
 

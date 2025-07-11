@@ -79,6 +79,7 @@ namespace StudentSubjectApplication.Presentation.Controller
             subjectGroup.MapPut("/Update/{id}", UpdateSubject).RequireAuthorization();
             subjectGroup.MapDelete("/Delete/{id}", DeleteSubject).RequireAuthorization();
             subjectGroup.MapGet("/GetRelatedStudents/{id}", GetRelatedStudents).RequireAuthorization();
+            subjectGroup.MapGet("/GetUnRelatedStudents/{id}", GetRelatedStudents).RequireAuthorization();
             subjectGroup.MapPost("/assignStudent/{subjectId}/{studentId}", AssignStudent).RequireAuthorization();
             subjectGroup.MapDelete("/UnassignStudent/{subjectId}/{studentId}", UnassignStudent).RequireAuthorization();
             subjectGroup.MapGet("/CheckNameExists/{name}", CheckSubjectExist).RequireAuthorization();
@@ -451,6 +452,8 @@ namespace StudentSubjectApplication.Presentation.Controller
                     return Results.Problem(ex.Message);
                 }
             }
+
+            
 
             // Assign a student to a subject
             static async Task<IResult> AssignStudent(string studentId, string subjectId, IGenericRepository<Student, Subject> studentRepository, IGenericRepository<Subject, Student> subjectRepository)
