@@ -73,6 +73,25 @@ namespace StudentSubjectApplication.Infrastructure.Repositories
             return relatedEntityList;
         }
 
+        public async Task RemoveEntityFromRelatedEntity(
+            TEntity entity, 
+            TRelatedEntity relatedEntity)
+        {
+            var entityId = entity.GetType().GetProperty("id")?.GetValue(entity)?.ToString();
+
+            var entityInDb = dbSet1
+                .Include(e => EF.Property<IEnumerable<TRelatedEntity>>(e, "relatedEntities"))
+                .FirstOrDefault(e => EF.Property<string>(e, "id") == entityId);
+
+            var relatedList = entityInDb.GetType().GetProperty("relatedEntities").GetValue(entityInDb) as IList<TRelatedEntity>;
+
+            if (relatedList != null && relatedList.Contains(relatedEntity))
+            {
+                relatedList.Remove(relatedEntity);
+                context.SaveChanges();
+            }
+        }
+
 
     }
 }

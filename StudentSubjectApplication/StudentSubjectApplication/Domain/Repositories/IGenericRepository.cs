@@ -17,5 +17,9 @@ namespace StudentSubjectApplication.Domain.Repositories
         Task UpdateAsync(TEntity entity);
         Task DeleteAsync(TEntity entity);
         Task<List<TRelatedEntity>> GetRelatedEntitiesAsync(TEntity entity);
+
+        Task RemoveEntityFromRelatedEntity(
+            TEntity entity, 
+            TRelatedEntity relatedEntity);
     }
 }

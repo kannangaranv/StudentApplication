@@ -524,16 +524,11 @@ namespace StudentSubjectApplication.Presentation.Controller
                     {
                         return Results.NotFound("Student or Subject not found.");
                     }
-                    if (student.relatedEntities != null && student.relatedEntities.Any(s => s.id == subject.id))
-                    {
-                        student.relatedEntities.Remove(subject);
-                        await studentRepository.UpdateAsync(student);
-                        return Results.Ok(new { message = "Student unassigned from subject successfully." });
-                    }
-                    else
-                    {
-                        return Results.NotFound("Student is not assigned to this subject.");
-                    }
+                    studentRepository.RemoveEntityFromRelatedEntity(student, subject);
+                    subjectRepository.RemoveEntityFromRelatedEntity(subject, student);
+                    return Results.Ok(new { message = "Student unassigned from subject successfully." });
+
+
                 }
                 catch (Exception ex)
                 {
